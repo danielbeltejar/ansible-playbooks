@@ -1,0 +1,24 @@
+---
+# This playbook disables firewalld
+
+  - name: Disable firewalld.
+    hosts: all
+    become: true
+    tasks:
+      - name: Stop firewalld services
+        service:
+          - name: firewalld
+            state: stopped
+
+      - name: Disable firewalld
+        command: systemctl disable firewalld
+
+      - name: Verify firewalld service is disabled
+        shell: systemctl is-enabled firewalld
+        register: firewalld_status
+        changed_when: firewalld_status.stdout != "disabled\n"
+
+      - name: Print firewalld status
+        debug: null
+        var: firewalld_status.stdout
+

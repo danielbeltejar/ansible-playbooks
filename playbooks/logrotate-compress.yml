@@ -1,0 +1,12 @@
+---
+# This playbook modifies the logrotate to enable log compression
+
+- name: Add compression to all logs in logrotate.
+  hosts: all
+  become: true
+  tasks:
+    - name: Modify logrotate.conf file to enable log compression
+      lineinfile:
+        path: /etc/logrotate.conf
+        regexp: '^compress'
+        line: 'compress'

@@ -1,0 +1,43 @@
+---
+
+- name: Install log2ram for RedHat
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install rsync package
+      yum:
+        name: rsync
+        state: present
+
+    - name: Check rsync installation
+      command: rsync --version
+      register: rsync_installed
+
+    - name: Print rsync version
+      debug:
+        msg: "rsync version is {{ rsync_installed.stdout }}"
+        name: Ensure rsync service is running
+
+    - service:
+      name: rsync
+      state: started
+      enabled: yes
+
+    - name: Check rsync service status
+      command: systemctl status rsync
+      register: rsync_status
+
+    - name: Print rsync service status
+      debug:
+        msg: "rsync service status is {{ rsync_status.stdout }}"
+
+    - name: Clone git repo
+      git:
+        repo: https://github.com/azlux/log2ram
+        dest: /tmp
+        
+    - name: Add line to file
+      lineinfile:
+          path: /tmp/log2ram/install.sh
+          line: "/sbin/restorecon -v /etc/systemd/system/log2ram*"
+          before: "This is the line to insert after"

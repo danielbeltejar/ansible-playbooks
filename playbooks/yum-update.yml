@@ -1,0 +1,23 @@
+---
+
+- name: Update all packages
+  hosts: all
+  become: true
+  tasks:
+    - name: Update the system
+      ansible.builtin.yum:
+        name: '*'
+        state: present
+        register: yum_result
+
+    - name: Debug the update result
+      debug:
+        var: yum_result
+
+    - name: Check if all services are running
+      ansible.legacy.shell: "/bin/systemctl list-units --state=running"
+      register: services_result
+
+    - name: Debug the services result
+      debug:
+        var: services_result
